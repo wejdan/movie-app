@@ -2,9 +2,9 @@ import React from "react";
 
 const Input = React.forwardRef(
   ({ label, icon, className, error, ...props }, ref) => {
-    const inputClassName = `bg-gray-800 text-white border ${
-      error ? "border-red-500" : "border-gray-600"
-    } rounded py-2 px-3 w-full leading-tight focus:outline-none focus:bg-gray-700 focus:border-gray-500 ${
+    const inputClassName = `text-gray-900 bg-white dark:bg-gray-800 dark:text-white  border ${
+      error ? "border-red-500" : "border-gray-400 dark:border-gray-600"
+    } rounded py-2 px-3 w-full leading-tight focus:outline-none dark:focus:bg-gray-700 dark:focus:border-gray-500 ${
       icon ? "pl-10" : "pl-3"
     } `;
 
@@ -31,18 +31,19 @@ const Input = React.forwardRef(
 );
 
 // Custom TextArea component
+// Custom TextArea component
 const TextArea = React.forwardRef(
   ({ label, icon, className, error, ...props }, ref) => {
-    const textareaClassName = `bg-gray-800 text-white border ${
-      error ? "border-red-500" : "border-gray-600"
-    } rounded py-2 px-3 w-full leading-tight focus:outline-none focus:bg-gray-700 focus:border-gray-500 ${
+    const textareaClassName = `bg-white dark:bg-gray-800 text-gray-900 dark:text-white border ${
+      error ? "border-red-500" : "border-gray-400 dark:border-gray-600"
+    } rounded py-2 px-3 w-full leading-tight focus:outline-none dark:focus:bg-gray-700 dark:focus:border-gray-500 ${
       icon ? "pl-10" : "pl-3"
     } `;
 
     return (
       <div className={className}>
         {label && (
-          <label className="block text-sm font-bold mb-2 text-gray-400">
+          <label className="block text-sm font-bold mb-2 text-gray-900 dark:text-gray-400">
             {label}
           </label>
         )}
@@ -53,9 +54,8 @@ const TextArea = React.forwardRef(
             </span>
           )}
           <textarea ref={ref} {...props} className={textareaClassName} />
-          {/* Reserve space for error message */}
         </div>
-        <p className="mt-1 text-xs text-red-500 ">{error || ""}</p>
+        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
       </div>
     );
   }
@@ -64,16 +64,16 @@ const TextArea = React.forwardRef(
 // Custom Select component
 const Select = React.forwardRef(
   ({ label, icon, className, options, error, ...props }, ref) => {
-    const selectClassName = `bg-gray-800 text-white border ${
-      error ? "border-red-500" : "border-gray-600"
-    } rounded py-2 px-3 w-full leading-tight focus:outline-none focus:bg-gray-700 focus:border-gray-500 ${
+    const selectClassName = `bg-white dark:bg-gray-800 text-gray-900 dark:text-white border ${
+      error ? "border-red-500" : "border-gray-400 dark:border-gray-600"
+    } rounded py-2 px-3 w-full leading-tight focus:outline-none dark:focus:bg-gray-700 dark:focus:border-gray-500 ${
       icon ? "pl-10" : "pl-3"
     } `;
 
     return (
       <div className={className}>
         {label && (
-          <label className="block text-sm font-bold mb-2 text-gray-400">
+          <label className="block text-sm font-bold mb-2 text-gray-900 dark:text-gray-400">
             {label}
           </label>
         )}
@@ -90,9 +90,8 @@ const Select = React.forwardRef(
               </option>
             ))}
           </select>
-          {/* Reserve space for error message */}
         </div>
-        <p className=" text-xs text-red-500 ">{error || ""}</p>
+        {error && <p className=" text-xs text-red-500">{error || ""}</p>}
       </div>
     );
   }

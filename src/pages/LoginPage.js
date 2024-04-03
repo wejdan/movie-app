@@ -19,10 +19,12 @@ function LoginPage() {
     loading || Object.values(formData).some((value) => value.trim() === "");
 
   const onChange = (e) => {
-    const { name, value } = e.target; // Destructure name and value from event target
+    const { name, value } = e.target;
+    // If the input field is 'email', convert its value to lowercase
+    const updatedValue = name === "email" ? value.toLowerCase() : value;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: value, // Dynamically update the right state based on input name
+      [name]: updatedValue,
     }));
   };
 
@@ -50,7 +52,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center mx-auto w-full max-w-md px-6">
+    <div className=" flex flex-grow flex-col justify-center mx-auto   w-full max-w-md px-6">
       <Container>
         <h2 className="text-lg font-bold text-center">Sign In</h2>
         <form>
@@ -82,13 +84,13 @@ function LoginPage() {
           <div className="flex justify-between items-center mt-6">
             <NavLink
               to="/forgot-password"
-              className="text-sm text-gray-400 hover:underline"
+              className="text-sm text-gray-700  dark:text-gray-400 hover:underline"
             >
               Forgot password?
             </NavLink>
             <NavLink
               to="/singup"
-              className="text-sm text-gray-400 hover:underline"
+              className="text-sm text-gray-700 dark:text-gray-400 hover:underline"
             >
               Sign Up
             </NavLink>

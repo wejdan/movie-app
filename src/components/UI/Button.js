@@ -18,20 +18,20 @@ const Button = ({
     case "solid":
       typeStyle =
         isLoading || isDisabled
-          ? "bg-white text-gray-400 border border-transparent shadow"
-          : "bg-white text-gray-800 border border-transparent hover:bg-gray-200 shadow";
+          ? "bg-slate-900 text-gray-300 dark:bg-white dark:text-gray-400 border border-transparent shadow"
+          : "bg-black text-white  dark:bg-white dark:text-gray-800 border border-transparent  dark:hover:bg-gray-200 shadow";
       break;
     case "outline":
       typeStyle =
         isLoading || isDisabled
           ? "text-gray-400 border border-gray-400"
-          : "text-gray-200 border border-gray-400 hover:border-white hover:text-white";
+          : "text-slate-900 dark:text-gray-200 border border-slate-600 dark:border-gray-400 hover:border-slate-500 dark:hover:border-white dark:hover:text-white";
       break;
     case "link":
       typeStyle =
         isLoading || isDisabled
           ? "text-gray-400 cursor-not-allowed"
-          : "text-gray-200 hover:text-white";
+          : "text-gray-900 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 ";
       break;
     default:
       typeStyle =

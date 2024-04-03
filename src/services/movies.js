@@ -1,19 +1,10 @@
+import { customFetch, handleResponseError } from "../utils/utils";
+
 const URL = `${process.env.REACT_APP_API_URL}/movies`;
-export async function fetchGenres(signal) {
-  try {
-    const response = await fetch(`${URL}/generas`, { signal });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const genres = await response.json();
-    console.log("genres", genres);
-    return genres;
-  } catch (error) {
-    console.error("Could not fetch genres:", error);
-  }
-}
+export const fetchGenres = (signal) => {
+  return customFetch(`${URL}/generas`, { signal });
+};
 export async function createMovie(token, movieData) {
-  console.log("token, movieData");
   const formData = new FormData();
   formData.append("title", movieData.title);
   formData.append("description", movieData.description);
@@ -21,7 +12,9 @@ export async function createMovie(token, movieData) {
   formData.append("type", movieData.type);
   formData.append("status", movieData.status);
   formData.append("releaseDate", movieData.releaseDate);
-  formData.append("director", movieData.director);
+  if (movieData.director) {
+    formData.append("director", movieData.director);
+  }
 
   // Ensure 'writers' is always an array
   const genreArray = Array.isArray(movieData.genre)
@@ -49,72 +42,24 @@ export async function createMovie(token, movieData) {
   // Append files if available
   formData.append("poster", movieData.poster);
   formData.append("trailer", movieData.trailer);
-  console.log(formData);
-  try {
-    const response = await fetch(`${URL}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-    console.log(response);
-    if (!response.ok) {
-      console.log("Response is not ok, attempting to throw an error...");
-      const errorData = await response.json(); // Ensure this line executes without issues
-      console.log("Error Data:", errorData); // Log to see what the server responded with
-      const error = new Error(errorData.message || "Failed to create movie");
-      error.status = response.status; // Add the status code to the error object
-      throw error;
-    }
-
-    const result = await response.json();
-    console.log("Movie created successfully:", result);
-  } catch (error) {
-    console.error("Error creating movie:", error);
-    throw error;
-  }
+  return customFetch(`${URL}`, {
+    method: "POST",
+    body: formData,
+    token, // Pass the token directly; customFetch will handle Authorization header
+  });
 }
 export const getAllMovies = async (signal, searchQuery = "", page = 1) => {
-  console.log(signal, searchQuery, page);
   const params = new URLSearchParams({
     query: searchQuery,
     page,
   });
-  try {
-    const response = await fetch(`${URL}?${params.toString()}`, { signal }); // Replace with your actual server URL
-    if (!response.ok) {
-      throw new Error("Failed to fetch movies: " + response.statusText);
-    }
-    const data = await response.json();
-    console.log(data);
-    return data; // Assuming the server response format is { users: [...] }
-  } catch (error) {
-    console.error("Error fetching movies:", error);
-    throw error; // Re-throw the error for handling by the caller
-  }
+  return customFetch(`${URL}?${params.toString()}`, { signal });
 };
 export const deleteMovie = async (token, movieId) => {
-  try {
-    const response = await fetch(`${URL}/${movieId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`, // Include the token for authorization
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Failed to delete movie");
-      error.status = response.status; // Add the status code to the error object
-      throw error;
-    }
-
-    return await response.json(); // This should return a message confirming the deletion
-  } catch (error) {
-    console.error("Error deleting movie:", error);
-    throw error; // Propagate the error to be handled where the function is called
-  }
+  return customFetch(`${URL}/${movieId}`, {
+    method: "DELETE",
+    token,
+  });
 };
 
 export const fetchMoviesByGenre = async (
@@ -123,34 +68,24 @@ export const fetchMoviesByGenre = async (
   page = 1,
   pageSize = 10
 ) => {
-  try {
-    // Construct the URL with query parameters for pagination and genre ID
-    const params = new URLSearchParams({
-      page,
-      pageSize,
-    });
-    const response = await fetch(
-      `${URL}/genre/${genreId}?${params.toString()}`,
-      {
-        method: "GET",
-        signal, // Pass the AbortController signal for request cancellation if needed
-        headers: {
-          "Content-Type": "application/json",
-          // Authorization header if required
-          // "Authorization": `Bearer ${token}`,
-        },
-      }
-    );
+  const params = new URLSearchParams({ page, pageSize });
+  return customFetch(`${URL}/genre/${genreId}?${params.toString()}`, {
+    signal,
+  });
+};
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+export const fetchMovieData = async (signal, movieId) => {
+  return customFetch(`${URL}/${movieId}`, { signal });
+};
 
-    const movies = await response.json();
-    console.log("Fetched movies by genre:", movies);
-    return movies;
-  } catch (error) {
-    console.error("Could not fetch movies by genre:", error);
-    throw error; // Propagate the error to be handled by the caller
-  }
+export const fetchMovieReviews = async (movieId) => {
+  return customFetch(`${URL}/${movieId}/reviews`, {});
+};
+
+export const fetchSimilarMovies = async (signal, movieId) => {
+  return customFetch(`${URL}/similar-movies/${movieId}`, { signal });
+};
+
+export const fetchFeaturedMovies = async (signal) => {
+  return customFetch(`${URL}/featured-movies`, { signal });
 };

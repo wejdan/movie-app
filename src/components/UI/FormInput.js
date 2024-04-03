@@ -6,7 +6,7 @@ const FormInput = React.forwardRef(({ label, ...props }, ref) => {
   return (
     <div className="mb-4">
       {label && (
-        <label className="block text-sm font-bold mb-2 text-gray-400">
+        <label className="block text-sm font-bold mb-2 text-gray-900 dark:text-gray-400">
           {label}
         </label>
       )}

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { FaTimes } from "react-icons/fa";
 import { Transition, TransitionGroup } from "react-transition-group";
 
@@ -33,11 +39,29 @@ function Modal({ children }) {
       currentModals.filter((modal) => modal.name !== name)
     );
   };
+  useEffect(() => {
+    if (modals.length > 0) {
+      // Modal is open
+      document.body.style.overflow = "hidden"; // Disable scrolling
+    } else {
+      // No modals are open
+      document.body.style.overflow = ""; // Enable scrolling
+    }
 
+    // Cleanup function to re-enable scrolling when the component unmounts
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [modals.length]);
   const onClose = (name) => () => closeModal(name);
-
+  const closeAllModals = () => {
+    console.log("Closing all modals");
+    setModals([]);
+  };
   return (
-    <ModalContext.Provider value={{ modals, openModal, closeModal, onClose }}>
+    <ModalContext.Provider
+      value={{ modals, closeAllModals, openModal, closeModal, onClose }}
+    >
       {children}
     </ModalContext.Provider>
   );
@@ -70,21 +94,21 @@ function Window({ name, children, isSmall, isPending }) {
   };
 
   const isActive = modals.some((modal) => modal.name === name);
-
+  console.log(isActive, modals, name);
   return isActive ? (
     <Transition in={isActive} timeout={300} unmountOnExit>
       {(state) => (
         <div
-          className={`z-50 fixed inset-0 bg-slate-200/10 backdrop-blur-sm flex justify-center items-center min-h-screen transition-all duration-200 ${getModalTransitionStyles(
+          className={`z-50 fixed  inset-0 bg-slate-200/20 dark:bg-slate-200/10 backdrop-blur-sm flex justify-center items-center min-h-screen transition-all duration-200 ${getModalTransitionStyles(
             state
           )}`}
           onClick={handleCloseOnClickOutside}
         >
           <div
             ref={modalContentRef}
-            className={`${
+            className={` ${
               isSmall ? "" : "w-2/3"
-            } space-y-8 bg-gray-900 px-16 py-7 shadow-lg relative rounded-md`}
+            } py-8 bg-white dark:bg-gray-800 px-16 py-7 shadow-lg relative rounded-md`}
           >
             <FaTimes
               className="cursor-pointer absolute right-3 top-3 text-gray-600"

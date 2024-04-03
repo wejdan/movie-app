@@ -18,6 +18,8 @@ import TagInput from "../UI/TagInput";
 import Modal, { useModalWindow } from "../UI/Modal";
 import DragDropVideoInput from "../UI/DragDropVideoInput";
 import { useGetAllGeneras } from "../../hooks/movies/useGetAllGeneras";
+import { BASE_URL } from "../../utils/data";
+import { useSelector } from "react-redux";
 
 function CreateMovieForm({ createMovieMutate }) {
   const [imagePreview, setImagePreview] = useState(null);
@@ -26,6 +28,8 @@ function CreateMovieForm({ createMovieMutate }) {
   const [video, setVideo] = useState(null);
   const [selectedGenres, setSelectedGenres] = useState([]);
   const { data } = useGetAllGeneras();
+  const isDarkMode = useSelector((state) => state.appSettings.isDarkMode);
+
   const toggleGenreSelection = (genre) => {
     setSelectedGenres((prevSelectedGenres) => {
       if (prevSelectedGenres.includes(genre)) {
@@ -49,8 +53,8 @@ function CreateMovieForm({ createMovieMutate }) {
       title: "", // Default value for the title
       description: "", // Default value for the description
       tags: [], // Default value for tags
-      director: "", // Default value for director
-      writers: "", // Default value for writers
+      director: null, // Default value for director
+      writers: [], // Default value for writers
       genres: [], // Default value for genre
       type: "", // Default value for type
       language: "", // Default value for language
@@ -61,8 +65,6 @@ function CreateMovieForm({ createMovieMutate }) {
     },
   });
   const onSubmit = (formData) => {
-    console.log(formData); // Initial form data logging
-
     // Map form data to match the movie schema structure
     const movieData = {
       title: formData.title,
@@ -70,7 +72,7 @@ function CreateMovieForm({ createMovieMutate }) {
       poster: formData.poster, // Assuming this is the URL or path to the poster image
       tags: formData.tags.map((tag) => tag.value), // Assuming tags are in the format { value: "tagValue", label: "TagLabel" }
       genre: formData.genres, // Assuming genre IDs are stored directly in formData.genres
-      director: formData.director.value, // Assuming director is selected using an autocomplete component and has a format { value: "directorId", label: "DirectorName" }
+      director: formData.director?.value, // Assuming director is selected using an autocomplete component and has a format { value: "directorId", label: "DirectorName" }
       writers: formData.writers?.map((writer) => writer.value), // Assuming writers are selected similarly to tags
       casts: formData.casts.map((cast) => ({
         actor: cast.actor.value, // Assuming actor object has an id field
@@ -216,7 +218,6 @@ function CreateMovieForm({ createMovieMutate }) {
               <Controller
                 control={control}
                 name="director"
-                rules={{ required: "Director is required" }}
                 render={({ field: { onChange, onBlur, value, ref } }) => (
                   <Autocomplete
                     className="mb-4"
@@ -234,7 +235,6 @@ function CreateMovieForm({ createMovieMutate }) {
               <Controller
                 control={control}
                 name="writers"
-                rules={{ required: "Writers are required" }}
                 render={({ field: { onChange, onBlur, value, ref } }) => (
                   <Autocomplete
                     className="mb-4"
@@ -252,7 +252,9 @@ function CreateMovieForm({ createMovieMutate }) {
 
               {/* Example for Input without Controller as it's not used for submission */}
               <div className="flex justify-between w-full items-center mb-2 text-sm font-bold text-gray-300">
-                <div>Add Cast & Crew</div>
+                <div className="text-gray-900 dark:text-gray-400">
+                  Add Cast & Crew
+                </div>
                 <Modal.Open opens={"casts"}>
                   <Button type="button" variant={"link"}>
                     {" "}
@@ -390,25 +392,29 @@ function CreateMovieForm({ createMovieMutate }) {
       <Modal.Window name={"casts"} isSmall={true}>
         <div className="flex text-white w-64  flex-col  space-y-4">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-6">Cast Members:</h3>
+            <h3 className="text-lg text-black dark:text-white font-semibold mb-6">
+              Cast Members:
+            </h3>
             <ul>
               {watchedCasts.map((cast, index) => (
                 <li key={index}>
                   <div className="flex w-64 items-center my-2">
                     <img
-                      src={cast.actor.image}
+                      src={`${BASE_URL}/` + cast.actor.image}
                       alt={cast.actor.label}
                       className="w-10 h-10 mr-2" // Tailwind classes for styling
                     />
                     <div className="flex-grow flex flex-col">
-                      <span>{cast.actor.label} </span>
-                      <span className="text-gray-500 mx-2 text-sm">
+                      <span className="dark:text-white text-black">
+                        {cast.actor.label}{" "}
+                      </span>
+                      <span className="text-gray-500  text-sm">
                         {cast.role}
                       </span>
                     </div>
 
                     <FaTimes
-                      className="ml-3 transition-colors cursor-pointer duration-200 ease-in-out hover:text-red-500"
+                      className="ml-3 transition-colors cursor-pointer duration-200 ease-in-out text-black dark:text-white hover:text-red-500"
                       onClick={() => {
                         handleRemoveCast(cast.actor.id);
                       }}
@@ -431,8 +437,8 @@ function CreateMovieForm({ createMovieMutate }) {
                 key={genre.id}
                 className={`p-2 border-2 ${
                   selectedGenres.includes(genre.id)
-                    ? "bg-white text-black" // Colors when selected
-                    : "text-white border-white hover:bg-white hover:text-black" // Colors when not selected
+                    ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white" // Colors when selected
+                    : "text-black border-black hover:bg-black hover:text-white dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-black" // Colors when not selected
                 } transition-colors text-xs font-bold rounded-md`} // Tailwind classes for styling
                 onClick={() => toggleGenreSelection(genre.id)}
               >

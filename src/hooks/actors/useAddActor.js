@@ -9,7 +9,6 @@ import { useModalWindow } from "../../components/UI/Modal";
 export function useAddActor(onSuccess, onMutationStart, onMutationEnd) {
   const queryClient = useQueryClient();
   const { onClose } = useModalWindow();
-
   const addActorMutation = useAuthMutation(addActor, {
     onMutate: async () => {
       // Called immediately before the mutation function is fired
@@ -33,6 +32,7 @@ export function useAddActor(onSuccess, onMutationStart, onMutationEnd) {
         duration: 5000,
         // isClosable is not a supported option in react-hot-toast
       });
+      //  onClose("add-actor")();
     },
     onSettled: () => {
       // Called on either success or error

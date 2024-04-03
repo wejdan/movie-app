@@ -51,7 +51,7 @@ const DragDropVideoInput = ({ setVideo }) => {
 
   return (
     <div
-      className={`flex justify-center items-center w-96 h-96 bg-gray-900 rounded-lg cursor-pointer ${
+      className={`flex justify-center items-center w-96 h-96 bg-white dark:bg-gray-800 rounded-lg cursor-pointer ${
         dragActive
           ? "border-4 border-dashed border-gray-500"
           : "border-2 border-dashed border-gray-700"

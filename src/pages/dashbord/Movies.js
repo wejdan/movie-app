@@ -77,7 +77,9 @@ const ConfirmDeleteContent = ({
 }) => {
   return (
     <div className="">
-      <h2 className="text-lg font-semibold mb-4">Delete Confirmation</h2>
+      <h2 className="dark:text-white text-black text-lg font-semibold mb-4">
+        Delete Confirmation
+      </h2>
       <p className="text-gray-400 mb-6">
         Are you sure you want to delete this movie?
       </p>
@@ -86,7 +88,6 @@ const ConfirmDeleteContent = ({
           isLoading={deleteMovieMutate.isPending}
           variant={"soild"}
           onClick={() => {
-            console.log("Deleting movie with ID:", modalData.movieId);
             // Perform the delete operation here
             deleteMovieMutate.mutate(modalData.movieId);
           }}

@@ -8,10 +8,12 @@ const Sidebar = () => {
   const dispatch = useDispatch(); // If using Redux
   const { userData } = useSelector((state) => state.auth);
   // Function to determine the class name based on isActive
+  const isDarkMode = useSelector((state) => state.appSettings.isDarkMode);
+
   const getNavLinkClass = (isActive) =>
     isActive
-      ? "flex items-center p-2 text-base font-normal text-white rounded-lg bg-gray-700"
-      : "flex items-center p-2 text-base font-normal text-white rounded-lg hover:bg-gray-700";
+      ? "flex items-center p-2 text-base font-normal text-black dark:text-white rounded-lg bg-gray-300 dark:bg-gray-700"
+      : "flex items-center p-2 text-base font-normal   text-black dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700";
 
   // Logout function, adjust as necessary for your application's logic
   const handleLogout = () => {
@@ -23,7 +25,7 @@ const Sidebar = () => {
   return (
     <aside className="w-64 flex flex-col flex-shrink-0" aria-label="Sidebar">
       <div
-        className="flex flex-col overflow-y-auto py-4 px-3 bg-gray-800 flex-grow"
+        className="flex flex-col overflow-y-auto py-4 px-3 bg-white dark:bg-gray-800 flex-grow"
         style={{ minHeight: "100vh" }}
       >
         {" "}
@@ -32,7 +34,11 @@ const Sidebar = () => {
           {" "}
           <div className="flex items-center justify-center mb-6">
             <NavLink to="/">
-              <img src="/logo192.png" alt="Company Logo" className="h-32" />
+              {isDarkMode ? (
+                <img src="/logo193.png" alt="Company Logo" className="h-32" />
+              ) : (
+                <img src="/logo192.png" alt="Company Logo" className="h-32" />
+              )}
             </NavLink>
           </div>
           <ul className="space-y-2">

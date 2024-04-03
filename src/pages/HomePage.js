@@ -10,20 +10,20 @@ import Navbar from "../components/UI/Navbar";
 import "swiper/less";
 import "swiper/less/navigation";
 import "swiper/less/pagination";
+import FeaturedMovies from "../components/movie/FeaturedMovies";
 
 function HomePage() {
   const { data } = useGetAllGeneras();
-
   const genreList = data ? data : [];
-  console.log(genreList);
   return (
     <>
-      <div className="bg-gray-900 min-h-screen  text-white">
+      <div className=" min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-white ">
         <Navbar />
 
-        <div className="container ">
+        <div className="  ">
           <div className="flex flex-col min-h-screen ">
-            <main className="pl-8 flex-grow">
+            <FeaturedMovies />
+            <main className=" flex-grow">
               {genreList.map((genre) => (
                 <MoviesList genre={genre} />
               ))}

@@ -80,7 +80,7 @@ function MenuItems({ children }) {
         >
           <div
             ref={modalContentRef}
-            className={`w-52 bg-gray-800 shadow-lg relative rounded-md`}
+            className={`w-52 bg-white dark:bg-gray-800 shadow-lg relative rounded-md`}
             style={{ top: menuPosition.y, left: menuPosition.x }}
           >
             {children}
@@ -123,7 +123,7 @@ function Item({ onClick, icon, children }) {
 
         onClose();
       }}
-      className="cursor-pointer h-12 px-5 flex items-center bg-gray-800 text-white hover:bg-gray-700  transition-all duration-200 w-full rounded-md"
+      className="cursor-pointer h-12 px-5 flex items-center dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800 hover:bg-slate-100 transition-all duration-200 w-full rounded-md"
     >
       {icon && <span className="mr-4 text-white">{icon}</span>}{" "}
       {/* Render icon if provided */}

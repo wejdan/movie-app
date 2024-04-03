@@ -48,6 +48,8 @@ export const authSlice = createSlice({
       state.user = null;
       state.userData = null;
       state.isAuthenticating = false;
+      state.token = null; // Clear the stored token
+      state.isAdmin = false;
       // state.didTryAutoLogin = false;
     },
     setUserData: (state, action) => {

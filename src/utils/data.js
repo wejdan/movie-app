@@ -8,99 +8,7 @@ const m = [
     rating: "9.0",
     info: "Historical Drama",
   },
-  {
-    title: "The Forgotten Battle",
-    thumbnail: "https://i.ebayimg.com/images/g/0gYAAOSwEWNco-gj/s-l1600.jpg",
-    rating: "8.5",
-    info: "War Drama",
-  },
-  {
-    title: "Space Sweepers",
-    thumbnail:
-      "https://media.comicbook.com/2017/10/iron-man-movie-poster-marvel-cinematic-universe-1038878.jpg",
-    rating: "7.9",
-    info: "Sci-Fi Adventure",
-  },
-  {
-    title: "Shadow in the Cloud",
-    thumbnail:
-      "https://cdn.europosters.eu/image/350/posters/dune-part-1-i122815.jpg",
-    rating: "7.1",
-    info: "Action Horror",
-  },
-  {
-    title: "The Last Duel",
-    thumbnail:
-      "https://lwlies.com/wp-content/uploads/2017/11/split-900x0-c-default.jpg",
-    rating: "8.2",
-    info: "Historical Epic",
-  },
-  {
-    title: "Voyage of Time",
-    thumbnail:
-      "https://www.tallengestore.com/cdn/shop/products/JohnWick-KeanuReeves-HollywoodEnglishActionMoviePoster-2_c927bf3a-7e64-4c67-b05f-960c2f2cd3d0.jpg?v=1649071611",
-    rating: "8.0",
-    info: "Documentary",
-  },
-  {
-    title: "Inception",
-    thumbnail:
-      "https://intheposter.com/cdn/shop/products/the-front-line-in-the-poster-1_1600x.jpg?v=1694762475",
-    rating: "8.8",
-    info: "Sci-Fi Thriller",
-  },
-  {
-    title: "Interstellar",
-    thumbnail: "https://example.com/path-to-interstellar-thumbnail.jpg",
-    rating: "8.6",
-    info: "Space Adventure",
-  },
-  {
-    title: "The Revenant",
-    thumbnail: "https://i.ebayimg.com/images/g/SQcAAOSwBxhkOA-s/s-l1600.jpg",
-    rating: "8.0",
-    info: "Survival Drama",
-  },
-  {
-    title: "Parasite",
-    thumbnail:
-      "https://m.media-amazon.com/images/I/51gjEOMj3gL._AC_UF1000,1000_QL80_.jpg",
-    rating: "8.6",
-    info: "Thriller",
-  },
-  {
-    title: "Blade Runner 2049",
-    thumbnail:
-      "https://kiranjitchanamediahome.files.wordpress.com/2019/02/canva-monochrome-horror-movie-poster-macgp3s1byu.jpg?w=1100",
-    rating: "8.0",
-    info: "Neo-noir Sci-Fi",
-  },
-  {
-    title: "Mad Max: Fury Road",
-    thumbnail: "https://www.dotyeti.com/wp-content/uploads/2023/01/barbie.webp",
-    rating: "8.1",
-    info: "Action Adventure",
-  },
-  {
-    title: "The Grand Budapest Hotel",
-    thumbnail:
-      "https://artofthemovies.co.uk/cdn/shop/files/IMG_4154_1-780453_de0cc110-550d-4448-a7ec-d3ff945c0739.jpg?v=1696169470",
-    rating: "8.1",
-    info: "Comedy Drama",
-  },
-  {
-    title: "Her",
-    thumbnail: "https://img.fruugo.com/product/9/32/14416329_max.jpg",
-    rating: "8.0",
-    info: "Romantic Sci-Fi",
-  },
-  {
-    title: "Moonlight",
-    thumbnail:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJPI_sPw-oWsKgVHJoej-L6CWovOxiSDiVtg&usqp=CAU",
-    rating: "7.4",
-    info: "Drama",
-  },
+
   // ... other movies
 ];
 export const movies = m.map((movie) => ({
@@ -178,3 +86,10 @@ export const actors = actorsList.map((actor) => ({
   ...actor,
   id: uuidv4(), // This will generate a unique UUID for each movie
 }));
+export const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+export const truncateText = (text, maxLength) => {
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + "...";
+  }
+  return text;
+};

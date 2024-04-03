@@ -1,67 +1,62 @@
+import { customFetch } from "../utils/utils";
+
 const API_URL = `${process.env.REACT_APP_API_URL}/auth`;
 
-export async function signUp(email, password, name) {
-  try {
-    const response = await fetch(`${API_URL}/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email, password }),
-    });
+export const signUp = (email, password, name) => {
+  return customFetch(`${API_URL}/signup`, {
+    method: "POST",
+    body: JSON.stringify({ name, email, password }),
+  });
+};
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to sign up");
-    }
+export const login = (email, password) => {
+  return customFetch(`${API_URL}/login`, {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+};
 
-    const data = await response.json();
-    return data; // data contains userId and token
-  } catch (error) {
-    console.error("Error during signup:", error);
-    throw error; // Re-throw to handle it in the component
-  }
-}
+export const getUserData = (token) => {
+  return customFetch(`${API_URL}/userData`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 
-export async function login(email, password) {
-  try {
-    const response = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    console.log("response", response);
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to log in");
-    }
+export const requestOtp = (email) => {
+  return customFetch(`${API_URL}/requestOtp`, {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+};
 
-    const data = await response.json();
-    return data; // data contains userId and token
-  } catch (error) {
-    console.error("Error during login:", error);
-    throw error; // Re-throw to handle it in the component
-  }
-}
+export const verifyOtp = (email, otp) => {
+  return customFetch(`${API_URL}/verifyOtp`, {
+    method: "POST",
+    body: JSON.stringify({ email, otp }),
+  });
+};
 
-export const getUserData = async (token) => {
-  try {
-    const response = await fetch(`${API_URL}/userData`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        // Do not set Content-Type for FormData; it's automatically set
-      },
-    }); // Replace with your actual server URL
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to fetch user data");
-    }
-    const userData = await response.json();
-    return userData; // Assuming the server response format is the user object
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    //throw error; // Re-throw the error for handling by the caller
-  }
+export const resetPassword = (token, newPassword) => {
+  return customFetch(`${API_URL}/reset/${token}`, {
+    method: "POST",
+    body: JSON.stringify({ password: newPassword }),
+  });
+};
+
+export const requestPasswordReset = (email) => {
+  return customFetch(`${API_URL}/forgot`, {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+};
+export const updateUserPassword = (token, currentPassword, newPassword) => {
+  return customFetch(`${API_URL}/updatePassword`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
 };

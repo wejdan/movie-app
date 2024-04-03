@@ -3,8 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as solidStar } from "@fortawesome/free-solid-svg-icons";
 import { faStar as regularStar } from "@fortawesome/free-regular-svg-icons";
 
-const Rating = () => {
-  const [rating, setRating] = useState(0);
+const Rating = ({ rating, setRating }) => {
   const [hoverRating, setHoverRating] = useState(0);
 
   const onMouseEnter = (index) => {

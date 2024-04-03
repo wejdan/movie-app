@@ -1,37 +1,82 @@
-import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import Button from "../components/UI/Button";
-import Modal from "../components/UI/Modal";
+import Modal, { useModalWindow } from "../components/UI/Modal";
 import Input from "../components/UI/Input";
 import Rating from "../components/movie/Rating";
 import { useSelector } from "react-redux";
-// Import your video player component if you have one
-// Import your components like CastList, ReviewButton, etc.
-const movie = {
-  id: 123,
-  title: "Jai Bhim",
-  description:
-    "A pregnant woman from a primitive tribal community, searches desperately for her husband, who is missing from police custody. A High Court advocate rises in support to find her husband and seek justice for them.",
-  director: "T.J. Gnanavel",
-  writers: "T.J. Gnanavel",
-  cast: ["Suriya", "Lijomol Jose"],
-  language: "Tamil",
-  releaseDate: "2021-09-01",
-  genre: "Drama Thriller",
-  type: "Film",
-  // Add your video source here
-  videoSrc: "path-to-your-video.mp4",
-};
+import { useGetMovieDetails } from "../hooks/movies/useGetMovieDetails";
+import Loader from "../components/UI/Loader";
+import { useGetUserRating } from "../hooks/reviews/useGetUserRating";
+import { useCreateReview } from "../hooks/reviews/useCreateReview";
+import { useUpdateReview } from "../hooks/reviews/useUpdateRating";
+import { useGetSimilarMovies } from "../hooks/movies/useGetSimilarMovies";
+import SimilarMovies from "../components/movie/SimilarMovies";
 
-// You would need to pass the movie details as props or fetch them from an API in a real-world scenario.
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+
 const MovieDetails = () => {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const { movieId } = useParams(); // Access the movie ID from URL parameters
+  const {
+    data: movie,
+    isLoading,
+    error: errorLoadingMovie,
+    isError,
+  } = useGetMovieDetails(movieId); // Assuming useGetMovieDetails hook takes a movieId parameter
+  const createReviewMutate = useCreateReview();
+  const updateReviewMutate = useUpdateReview(); // Assuming you have a mutation hook for updating reviews
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [reviewId, setReviewId] = useState(null);
+  const { closeModal } = useModalWindow(); // Destructure closeModal from the useModalWindow hook
+  const {
+    data: userRating,
+    isLoading: loadingUserRating,
+    error,
+  } = useGetUserRating(movieId);
+
+  const handleSubmitReview = () => {
+    const reviewData = { movieId, rating, comment };
+    if (reviewId) {
+      // If there's an existing rating, call update mutation
+      updateReviewMutate.mutate({ ...reviewData, reviewId }); // Assuming each rating has a unique _id
+    } else {
+      // If there's no existing rating, call create mutation
+      console.log(reviewData, "***");
+      createReviewMutate.mutate(reviewData);
+    }
+  };
+  useEffect(() => {
+    // Find the user's rating for this movie
+    console.log("userRating", userRating);
+    if (userRating) {
+      setRating(userRating.rating);
+      setComment(userRating.comment || "");
+      setReviewId(userRating.id); // Store the entire rating object
+    }
+  }, [userRating, movieId]);
+  if (isLoading || loadingUserRating) {
+    return <Loader />;
+  }
+  if (isError) {
+    const errorMessage =
+      errorLoadingMovie.message || "An unknown error occurred";
+    return (
+      <div className="container mx-auto w-full  flex-grow flex items-center justify-center ">
+        <p>An error occurred: {errorMessage}</p>
+      </div>
+    );
+  }
+  if (!movie) {
+    return <div className="container mx-auto px-4 ">Movie not found</div>;
+  }
   return (
     <>
-      <div className="min-h-screen bg-gray-900 text-white">
+      <div className=" ">
         {/* Container for the movie details */}
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 ">
           {/* Movie Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold">{movie.title}</h1>
@@ -43,24 +88,40 @@ const MovieDetails = () => {
             <div className="w-full md:w-3/5">
               {/* Placeholder for the video or image thumbnail */}
               <div className="bg-gray-800 aspect-video mb-4 md:mr-4">
-                {/* Replace this with an <img> tag or video player */}
+                <video
+                  controls
+                  className="w-full h-full object-cover" // Ensure the video covers the div
+                  poster={`${BASE_URL}/` + movie.poster}
+                >
+                  <source
+                    src={`${BASE_URL}/` + movie.trailer}
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
               </div>
             </div>
 
             <div className="w-full md:w-2/5">
               <div className="mb-4">
                 <h2 className="text-xl font-bold">Details</h2>
-                <p>Director: {movie.director}</p>
-                <p>Writers: {movie.writers}</p>
-                <p>Cast: {movie.cast}</p>
+                <p>Director: {movie.director?.name || ""}</p>
+                <div>
+                  Writers:{" "}
+                  {movie.writers.map((writer) => writer.name).join(", ")}
+                </div>{" "}
+                {/* Assuming writers is an array of objects */}{" "}
                 <p>Language: {movie.language}</p>
                 <p>Release Date: {movie.releaseDate}</p>
-                <p>Genre: {movie.genre}</p>
+                <div>
+                  Genres: {movie.genre.map((genre) => genre.value).join(", ")}
+                </div>{" "}
+                {/* Assuming genre is an array of objects */}{" "}
               </div>
               {/* Movie Rating */}
               <div className="mb-4">
                 <h2 className="text-xl font-bold">Rating</h2>
-                <p>{movie.rating}</p>
+                <p>{movie.averageRating}</p>
               </div>
               {/* Action Buttons */}
               <div className="flex">
@@ -70,7 +131,7 @@ const MovieDetails = () => {
                 {/* Replace the button with NavLink */}
                 <NavLink
                   to={`/movie/review/${movie.id}`} // Replace movie.id with the actual ID property
-                  className="text-yellow-400 hover:text-yellow-500 px-4 py-2 rounded transition duration-300"
+                  className="text-gold hover:text-darkgold  dark:text-yellow-400 dark:hover:text-yellow-500 px-4 py-2 rounded transition duration-300"
                 >
                   Read Reviews
                 </NavLink>
@@ -79,31 +140,61 @@ const MovieDetails = () => {
           </div>
 
           {/* Movie Cast - assuming there's an array of cast members */}
-          <div className="mt-8">
+          <div className="my-16">
             <h2 className="text-xl font-bold mb-4">Cast</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {movie.cast.map((member) => (
-                <div key={member.id} className="text-center">
-                  <div className="w-24 h-24 bg-gray-800 rounded-full mx-auto"></div>
-                  <p className="mt-2">{member.name}</p>
+              {movie.casts.map((cast) => (
+                <div key={cast.id} className="text-center">
+                  {/* Assuming profile contains the URL to the actor's image */}
+                  <img
+                    src={`${BASE_URL}/` + cast.actor.profile}
+                    alt={cast.actor.name}
+                    className="w-24 h-24 bg-gray-800 rounded-full mx-auto object-cover" // Added object-cover for better image fit
+                  />
+                  <p className="mt-2 font-bold">{cast.actor.name}</p>
+                  <p className="text-sm text-gray-400">{cast.role}</p>
                 </div>
               ))}
             </div>
           </div>
+          <h2 className="text-xl font-bold  mt-20">Similar Movies</h2>
+
+          <SimilarMovies movieId={movieId} />
         </div>
       </div>
-      <Modal.Window name={"rate"} isSmall={true}>
-        <div className="flex  flex-col justify-center items-center space-y-4">
+      <Modal.Window
+        isPending={createReviewMutate.isPending || updateReviewMutate.isPending}
+        name={"rate"}
+        isSmall={true}
+      >
+        <div className="flex flex-col justify-center items-center space-y-4">
           {user ? (
             <>
-              <Rating />
-              <textarea className="bg-gray-700 text-white border border-gray-600 rounded py-2 px-3 w-full leading-tight focus:outline-none focus:bg-gray-600 focus:border-gray-500" />
-              <Button className={"self-stretch"} variant={"solid"}>
-                Rate This Movie
+              <Rating rating={rating} setRating={setRating} />
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="bg-gray-700 text-white border border-gray-600 rounded py-2 px-3 w-full leading-tight focus:outline-none focus:bg-gray-600 focus:border-gray-500"
+              />
+              <Button
+                className={"self-stretch"}
+                variant={"solid"}
+                onClick={handleSubmitReview}
+                isLoading={
+                  createReviewMutate.isPending || updateReviewMutate.isPending
+                }
+                isDisabled={
+                  rating === 0 ||
+                  comment.trim() === "" ||
+                  (comment.trim() === userRating?.comment &&
+                    rating === userRating?.rating)
+                }
+              >
+                {reviewId ? "Update Your Rating" : "Rate This Movie"}
               </Button>
             </>
           ) : (
-            <div className="  text-center">
+            <div className="text-center">
               <p className="text-xl font-semibold text-yellow-400 mb-4">
                 Want to Rate This Movie?
               </p>
@@ -112,6 +203,7 @@ const MovieDetails = () => {
               </p>
               <Button
                 onClick={() => {
+                  closeModal("rate");
                   navigate("/login");
                 }}
                 className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900"
